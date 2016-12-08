@@ -20,7 +20,7 @@
   Article.createTable = function() {
     // webDb helps us query our data
     webDB.execute(
-      'CREATE TABLE IF NOT EXISTS articles (id INTERGER PRIMARY KEY, title VARCHAR, category VARCHAR, author VARCHAR, authorUrl VARCHAR, publishedOn DATE, body VARCHAR);', // TODO: What SQL command do we run here inside these quotes?
+      'CREATE TABLE IF NOT EXISTS articles(id INTERGER PRIMARY KEY, title VARCHAR, category VARCHAR, author VARCHAR, authorUrl VARCHAR, publishedOn VARCHAR, body VARCHAR);', // TODO: What SQL command do we run here inside these quotes?
       function() {
         console.log('Successfully set up the articles table.');
       }
@@ -38,7 +38,7 @@
     webDB.execute(
       [{
         // NOTE: this method will be called elsewhere after we retrieve our JSON
-        'sql': 'INSERT INTO articles (title, category, author, authorUrl, publishedOn, body) VALUES (?, ?, ?, ?, ?, ?);', // <----- TODO: complete our SQL query here, inside the quotes.
+        'sql': 'INSERT INTO articles (title, category, author, authorUrl, publishedOn, body ) VALUES (?, ?, ?, ?, ?, ?);', // <----- TODO: complete our SQL query here, inside the quotes.
         'data': [this.title, this.category, this.author, this.authorUrl, this.publishedOn, this.body]
       }]
     );
@@ -86,7 +86,7 @@
       [{
         /* NOTE: this is an advanced admin option, so you will need to test
             out an individual query in the console */
-        'sql': '', // <---TODO: Delete an article instance from the database based on its id:
+        'sql': 'DELETE FROM articles WHERE id = ?', // <---TODO: Delete an article instance from the database based on its id:
         'data': [this.id]
       }]
     );
@@ -94,7 +94,7 @@
 
   Article.clearTable = function() {
     webDB.execute(
-      'DELETE ...;' // <----TODO: delete all records from the articles table.
+      'DELETE FROM articles;' // <----TODO: delete all records from the articles table.
     );
   };
 
@@ -136,7 +136,8 @@
     });
   };
 
-  // TODO: ensure that our table has been created.
-
+  // TODONE: ensure that our table has been created.
+  Article.createTable();
   module.Article = Article;
+
 })(window);
