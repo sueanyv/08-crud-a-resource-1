@@ -1,5 +1,5 @@
 (function(module) {
-  function Article (opts) {
+  function Article(opts) {
     // DONE: Convert property assignment to Functional Programming style.
     Object.keys(opts).forEach(function(prop) {
       this[prop] = opts[prop];
@@ -10,7 +10,7 @@
 
   Article.prototype.toHtml = function(scriptTemplateId) {
     var template = Handlebars.compile(scriptTemplateId.text());
-    this.daysAgo = parseInt((new Date() - new Date(this.publishedOn))/60/60/24/1000);
+    this.daysAgo = parseInt((new Date() - new Date(this.publishedOn)) / 60 / 60 / 24 / 1000);
     this.publishStatus = this.publishedOn ? 'published ' + this.daysAgo + ' days ago' : '(draft)';
     this.body = marked(this.body);
     return template(this);
@@ -38,7 +38,7 @@
     webDB.execute(
       [{
         // NOTE: this method will be called elsewhere after we retrieve our JSON
-        'sql': '', // <----- TODO: complete our SQL query here, inside the quotes.
+        'sql': 'INSERT INTO article(title, category, author, authorUrl, publishedOn, body ) VALUES (?, ?, ?, ?, ?, ?);', // <----- TODO: complete our SQL query here, inside the quotes.
         'data': [this.title, this.category, this.author, this.authorUrl, this.publishedOn, this.body]
       }]
     );
@@ -46,13 +46,17 @@
 
   Article.fetchAll = function(nextFunction) {
     webDB.execute(
-      '', // <-----TODO: fill these quotes to query our table.
+      'SELECT * FROM article', // <-----TODO: fill these quotes to query our table.
       function(rows) {
         // if we have data in the table
         if (rows.length) {
-        /* TODO:
-           1 - Use Article.loadAll to instanitate these rows,
-           2 - invoke the function that was passed in to fectchAll */
+          /* TODO:
+
+             1 - Use Article.loadAll to instanitate these rows,
+             2 - invoke the function that was passed in to fectchAll */
+          Article.loadAll(rows);
+          nextFunction();
+
         } else {
           $.getJSON('/data/hackerIpsum.json', function(responseData) {
             responseData.forEach(function(obj) {
@@ -76,14 +80,12 @@
 
   Article.prototype.deleteRecord = function() {
     webDB.execute(
-      [
-        {
-          /* NOTE: this is an advanced admin option, so you will need to test
-              out an individual query in the console */
-          'sql': '', // <---TODO: Delete an article instance from the database based on its id:
-          'data': [this.id]
-        }
-      ]
+      [{
+        /* NOTE: this is an advanced admin option, so you will need to test
+            out an individual query in the console */
+        'sql': '', // <---TODO: Delete an article instance from the database based on its id:
+        'data': [this.id]
+      }]
     );
   };
 
@@ -95,23 +97,23 @@
 
   Article.allAuthors = function() {
     return Article.allArticles.map(function(article) {
-      return article.author;
-    })
-    .reduce(function(uniqueNames, curName) {
-      if (uniqueNames.indexOf(curName) === -1) {
-        uniqueNames.push(curName);
-      }
-      return uniqueNames;
-    }, []);
+        return article.author;
+      })
+      .reduce(function(uniqueNames, curName) {
+        if (uniqueNames.indexOf(curName) === -1) {
+          uniqueNames.push(curName);
+        }
+        return uniqueNames;
+      }, []);
   };
 
   Article.numWordsAll = function() {
     return Article.allArticles.map(function(article) {
-      return article.body.match(/\w+/g).length;
-    })
-    .reduce(function(a, b) {
-      return a + b;
-    });
+        return article.body.match(/\w+/g).length;
+      })
+      .reduce(function(a, b) {
+        return a + b;
+      });
   };
 
   Article.numWordsByAuthor = function() {
@@ -119,19 +121,19 @@
       return {
         name: currentAuthor,
         numWords: Article.allArticles.filter(function(article) {
-          return article.author === currentAuthor;
-        })
-        .map(function(currentAuthorsArticle) {
-          return currentAuthorsArticle.body.match(/\w+/g).length;
-        })
-        .reduce(function(previousWords, currentWords) {
-          return previousWords + currentWords;
-        })
+            return article.author === currentAuthor;
+          })
+          .map(function(currentAuthorsArticle) {
+            return currentAuthorsArticle.body.match(/\w+/g).length;
+          })
+          .reduce(function(previousWords, currentWords) {
+            return previousWords + currentWords;
+          })
       };
     });
   };
 
-// TODO: ensure that our table has been created.
+  // TODO: ensure that our table has been created.
 
   module.Article = Article;
 })(window);
